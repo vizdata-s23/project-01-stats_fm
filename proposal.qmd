@@ -37,7 +37,7 @@ The data comes from a Wikipedia list of lists titled ​​List of Radio Station
 
 -   Format: general content broadcast by the station
 
-The data collected from all 50 states were then aggregated to give the final data this project is using, thus adding another variable, state.
+The data collected from all 50 states were then aggregated to give the final data this project is using.
 
 The raw data, before wrangling, can be found in FCC's predicted service contour data points which is released regularly approximately at 10:00 AM Eastern Time daily (<https://www.fcc.gov/media/radio/fm-service-contour-data-points>). The details of how to read the data and its formats are given on the website. In addition, FCC's FM Query Broadcast Station Search can be used to look up a list of licensed stations (<https://www.fcc.gov/media/radio/fm-query>).
 
@@ -87,7 +87,7 @@ In 2021, Statista's Global Consumer Survey identified the top radio genres that 
 
 ### Question 2
 
-Another question we are interested in answering is the effect of population size on the number of radio stations. Given the variation of population density across the US, we would like to identify any differences in this relationship based on region (West, Midwest, South, Northeast).
+Another question we are interested in answering is the effect of population size on the number of radio stations. Given the variation of population density across the US, we would like to identify any differences in this relationship based on region (West, Midwest, South, Northeast).  
 
 # Analysis plan
 
@@ -97,4 +97,5 @@ Because the genre/format of our dataset has over 1000 unique variables, we will 
 
 ### Plan for Question 2
 
-To find a relationship between population of a state and the number of radio stations we will plot a scatter plot where each data point is a different state. The x-axis will represent the state's population and the y-axis will represent the number of radio stations in the state. To accomplish this, we will need to import another data set that contains the population of each state. The variables we plan to use are state, call sign, region (to be created by us) and state population. As stated before, we would also like to check for any differences in this relationship based on regions in the US (Regions are defined here: <https://vividmaps.com/regions-united-states/>), which will be separated by color.
+To find a relationship between population of a state and the number of radio stations we will plot a scatter plot where each data point is a different state. The x-axis will represent the state’s population and the y-axis will represent the number of radio stations in the state. To accomplish this, we will need to import another data set that contains the population of each state. Of course, we will need to group all the rows together based on state and sum up the number of rows based on that value so that there will only be 50 data points. As stated before, we would also like to check for any differences in this relationship based on regions in the US (Regions are defined here: https://vividmaps.com/regions-united-states/), which will be separated by color.
+
