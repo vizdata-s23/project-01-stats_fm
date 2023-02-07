@@ -14,57 +14,83 @@ library(tidyverse)
 
 # Dataset
 
-The data comes from a Wikipedia list of lists titled ​​List of Radio Stations in the United States (<https://en.wikipedia.org/wiki/Lists_of_radio_stations_in_the_United_States>). The list contains 50 links to radio stations categorized by state. Each of the 50 links lead to a table of FCC-licensed radio stations in the state. Here is a link to Alabama\'s (<https://en.wikipedia.org/wiki/List_of_radio_stations_in_Alabama>). The Wikipedi tables have 5 columns: Call Sign, Frequency, City of Liscence, Liscencee, and Format. Here is a description of the column names
+```{r}
+#| label:  data description
+#dimension: ((17_186, 6), (2_065, 6))
+
+radio_station <- tidytuesdayR::tt_load('2022-11-08')
+unique(radio_station$station_info$service)
+length(unique(radio_station$station_info$facility_id))
+unique(radio_station$station_info$status)
+unique(radio_station$station_info$details)
+```
+
+The data comes from a Wikipedia list of lists titled ​​List of Radio Stations in the United States (<https://en.wikipedia.org/wiki/Lists_of_radio_stations_in_the_United_States>). The list contains 50 links to radio stations categorized by state. Each of the 50 links lead to a table of FCC-licensed radio stations in the state. Here is a link to Alabama's (<https://en.wikipedia.org/wiki/List_of_radio_stations_in_Alabama>). The Wikipedia tables have 5 columns: Call Sign, Frequency, City of Licensee, Licensee and Format. Here is a description of the column names:
 
 -   Call sign: a unique identifier for a transmitter station
 
 -   Frequency: number of cycles a radio wave is transmitted per second
 
--   City of License: the city where the station is officially licenseded to serve (https://en.wikipedia.org/wiki/City_of_license#:\~:text=In%20American%2C%20Canadian%2C%20and%20Mexican,by%20that%20country's%20broadcast%20regulator.)
+-   City of License: the city where the station is officially licensed to serve (<https://en.wikipedia.org/wiki/City_of_license>)
 
 -   Licensee: holder of the license
 
 -   Format: general content broadcast by the station
 
-The data collected from all 50 states were then aggregated to give the final data this project is using. 
+The data collected from all 50 states were then aggregated to give the final data this project is using.
 
-The raw data, before wrangling, can be found in FCC\'s predicted service contour data points which is released regularly approximately at 10:00 AM Eastern Time daily (<https://www.fcc.gov/media/radio/fm-service-contour-data-points>). The details of how to read the data and its formats are given on the website. In addition, FCC\'s FM Query Broadcast Station Search can be used to look up a list of licensed stations (<https://www.fcc.gov/media/radio/fm-query>).
+The raw data, before wrangling, can be found in FCC's predicted service contour data points which is released regularly approximately at 10:00 AM Eastern Time daily (<https://www.fcc.gov/media/radio/fm-service-contour-data-points>). The details of how to read the data and its formats are given on the website. In addition, FCC's FM Query Broadcast Station Search can be used to look up a list of licensed stations (<https://www.fcc.gov/media/radio/fm-query>).
 
-The data that is loaded from tidytuesday 2022-11-08 contains two datasets - state_stations and station_info. State_station contains 17,186 rows of the above data with 6 rows - the above 5 along with a state column that has states as value. Station_info contains 2,065 rows of station information data with 6 columns - call_sign, facility_id, service, licensee, status, and details. Here are the details for the columns
+The data that is loaded from tidytuesday 2022-11-08 contains two datasets - state_stations and station_info. State_station contains 17,186 rows of the above data with 6 rows - the above 5 along with a state column that has states as value. Station_info contains 2,065 rows of station information data with 6 columns - call_sign, facility_id, service, licensee, status, and details. Here are the details for the columns:
 
 -   call_sign: a unique identifier for a transmitter station
 
-```{=html}
-<!-- -->
-```
 -   facility_id: facility id, 2,065 unique ids
 
 -   service: frequency (FM)
 
 -   licensee: holder of the license
 
--   status: status of the station (licensed, licensce ccanceled, licensced and silent)
+-   status: status of the station (licensed, license canceled, licensed and silent)
 
 -   details: link to further details (non-functional) (Click here for details)
 
-```{r}
-#| label - data description
-#| dimension: ((17_186, 6), (2_065, 6))
-radio_station <- tidytuesdayR::tt_load('2022-11-08')
+Finally, we are interested in mapping aspects of the geography of radio stations in the US. To do so, we will also be using the fm_service_contour_current.zip file to acquire the different characteristics needed to place the radio stations on a map visualization. The details for the columns are:
 
-unique(radio_station$station_info$service)
-length(unique(radio_station$station_info$facility_id))
-unique(radio_station$station_info$status)
-unique(radio_station$station_info$details)
+-   application_id: id of radio station
 
-```
+-   service: frequency (FM)
 
-We selected the radio stations dataset because we thought it would be interesting to examine the relationships between radio stations and their region. We were especially interested in examining how the location of a radio station may be related to the category of its broadcast (called "format" in this dataset). For example, one thing we were curious about was which regions religious-leaning radio stations are the most concentrated. On its own, this dataset doesn't have many variables to work with. However, we plan to bring in external data with population statistics and demographic information for regions so we can conduct more analysis on how these factors may affect the characteristics of a radio station. 
+-   lms_application_id: Licensing and Management System id
+
+-   dts_site_number: distributed transmission system site number
+
+-   site_lat: site of station latitude
+
+-   site_long: site of station longitude
+
+-   angle: angle (0 to 360)
+
+-   deg_lat: latitude for angle
+
+-   deg_lng: longitude for angle
+
+# Motivation
+
+We selected the radio stations dataset because we thought it would be interesting to examine the relationships between radio stations and their region. We were especially interested in examining how the location of a radio station may be related to the category of its broadcast (called "format" in this dataset). For example, one thing we were curious about was which regions religious-leaning radio stations are the most concentrated or what areas of the country would have dense areas of certain radio station genres. On its own, this dataset doesn't have many variables to work with. However, we plan to bring in external data with population statistics and demographic information for regions so we can conduct more analysis on how these factors may interact the characteristics of a radio station.
 
 # Questions
 
-The two questions you want to answer.
+### Question 1
+
+In 2021, Statista's Global Consumer Survey identified the top radio genres that Americans enjoy most (<https://www.statista.com/chart/24877/most-popular-us-radio-content/>). We are interested in how the distribution and density of radio stations varies across the country for each of the top genres identified in the Consumer Survey.
+
+### Question 2
 
 # Analysis plan
 
-A plan for answering each of the questions including the variables involved, variables to be created (if any), external data to be merged in (if any).
+### Plan for Question 1
+
+Because the genre/format of our dataset has over 1000 unique variables, we will be creating new categories that match that of the Consumer Survey's top genres by adapting code (<https://stackoverflow.com/questions/62396968/how-can-i-group-a-column-based-off-of-a-list-of-string-patterns-in-r>) that creates a new categorical column based off string patterns in the format column. We will not be merging in any external data, but will join the state_station.csv and station_info.csv with the data in fm_service_contour_current.zip using the script from the Tidy Tuesday repo (<https://github.com/rfordatascience/tidytuesday/tree/master/data/2022/2022-11-08>). The variables we plan to use are site_lat (Site of station latitude), site_long (Site of station longitude), application_id (Id of station) and the new genre column we will create. With this final dataset, we will create a map visualization that plots the locations of radio stations across America faceted by the most popular US radio genres in 2021.
+
+### Plan for Question 2
