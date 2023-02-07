@@ -87,6 +87,8 @@ In 2021, Statista's Global Consumer Survey identified the top radio genres that 
 
 ### Question 2
 
+Another question we are interested in answering is the effect of population size on the number of radio stations. Given the variation of population density across the US, we would like to identify any differences in this relationship based on region (West, Midwest, South, Northeast).  
+
 # Analysis plan
 
 ### Plan for Question 1
@@ -94,3 +96,6 @@ In 2021, Statista's Global Consumer Survey identified the top radio genres that 
 Because the genre/format of our dataset has over 1000 unique variables, we will be creating new categories that match that of the Consumer Survey's top genres by adapting code (<https://stackoverflow.com/questions/62396968/how-can-i-group-a-column-based-off-of-a-list-of-string-patterns-in-r>) that creates a new categorical column based off string patterns in the format column. We will not be merging in any external data, but will join the state_station.csv and station_info.csv with the data in fm_service_contour_current.zip using the script from the Tidy Tuesday repo (<https://github.com/rfordatascience/tidytuesday/tree/master/data/2022/2022-11-08>). The variables we plan to use are site_lat (Site of station latitude), site_long (Site of station longitude), application_id (Id of station) and the new genre column we will create. With this final dataset, we will create a map visualization that plots the locations of radio stations across America faceted by the most popular US radio genres in 2021.
 
 ### Plan for Question 2
+
+To find a relationship between population of a state and the number of radio stations we will plot a scatter plot where each data point is a different state. The x-axis will represent the state’s population and the y-axis will represent the number of radio stations in the state. To accomplish this, we will need to import another data set that contains the population of each state. As stated before, we would also like to check for any differences in this relationship based on regions in the US (Regions are defined here: https://vividmaps.com/regions-united-states/), which will be separated by color.
+
