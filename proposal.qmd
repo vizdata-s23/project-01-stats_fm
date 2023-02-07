@@ -1,5 +1,5 @@
 ---
-title: "Project title"
+title: "Stats FM"
 subtitle: "Proposal"
 format: html
 editor: visual
@@ -17,6 +17,8 @@ library(tidyverse)
 A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
 
 Make sure to load the data and use inline code for some of this information.
+
+We selected the radio stations dataset because we thought it would be interesting to examine the relationships between radio stations and their region. We were especially interested in examining how the location of a radio station may be related to the category of its broadcast (called \"format\" in this dataset). For example, one thing we were curious about was which regions religious-leaning radio stations are the most concentrated. On its own, this dataset doesn\'t have many variables to work with. However, we plan to bring in external data with population statistics and demographic information for regions so we can conduct more analysis on how these factors may affect the characteristics of a radio station. 
 
 # Questions
 
