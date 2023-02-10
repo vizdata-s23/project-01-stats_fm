@@ -18,14 +18,16 @@ library(tidyverse)
 #| label:  data description
 #dimension: ((17_186, 6), (2_065, 6))
 
-radio_station <- tidytuesdayR::tt_load('2022-11-08')
-unique(radio_station$station_info$service)
-length(unique(radio_station$station_info$facility_id))
-unique(radio_station$station_info$status)
-unique(radio_station$station_info$details)
+
+#read in CSVs
+station_info <- read.csv(file = 'data/station_info.csv')
+state_stations <- read.csv(file = 'data/state_stations.csv')
+#radio_station <- tidytuesdayR::tt_load('2022-11-08')
+
+
 ```
 
-The data comes from a Wikipedia list of lists titled ​​List of Radio Stations in the United States (<https://en.wikipedia.org/wiki/Lists_of_radio_stations_in_the_United_States>). The list contains 50 links to radio stations categorized by state. Each of the 50 links lead to a table of FCC-licensed radio stations in the state. Here is a link to Alabama's (<https://en.wikipedia.org/wiki/List_of_radio_stations_in_Alabama>). The Wikipedia tables have 5 columns: Call Sign, Frequency, City of Licensee, Licensee and Format. Here is a description of the column names:
+The data comes from a Wikipedia list of lists titled List of Radio Stations in the United States (<https://en.wikipedia.org/wiki/Lists_of_radio_stations_in_the_United_States>). The list contains 50 links to radio stations categorized by state. Each of the 50 links lead to a table of FCC-licensed radio stations in the state. Here is a link to Alabama's (<https://en.wikipedia.org/wiki/List_of_radio_stations_in_Alabama>). The Wikipedia tables have 5 columns: Call Sign, Frequency, City of Licensee, Licensee and Format. Here is a description of the column names:
 
 -   Call sign: a unique identifier for a transmitter station
 
@@ -87,7 +89,7 @@ In 2021, Statista's Global Consumer Survey identified the top radio genres that 
 
 ### Question 2
 
-Another question we are interested in answering is, "What is the relationship between population size in a particular region on the number of radio stations in that region?" Given the variation of population density across the US, we would like to identify any differences in this relationship based on region (West, Midwest, South, Northeast). We expect to observe that the densely populated regions (such as the Northeast) will have more radio stations than the less populated regions (such as the West and Midwest).  
+Another question we are interested in answering is, "What is the relationship between population size in a particular region on the number of radio stations in that region?" Given the variation of population density across the US, we would like to identify any differences in this relationship based on region (West, Midwest, South, Northeast). We expect to observe that the densely populated regions (such as the Northeast) will have more radio stations than the less populated regions (such as the West and Midwest).
 
 # Analysis plan
 
@@ -97,5 +99,4 @@ Because the genre/format of our dataset has over 1000 unique variables, we will 
 
 ### Plan for Question 2
 
-To find a relationship between population of a state and the number of radio stations we will plot a scatter plot where each data point is a different state. The x-axis will represent the state’s population and the y-axis will represent the number of radio stations in the state. To accomplish this, we will need to import another data set that contains the population of each state in 2016. Of course, we will need to group all the rows together based on state and sum up the number of rows based on that value so that there will only be 50 data points. As stated before, we would also like to check for any differences in this relationship based on regions in the US (Regions are defined here: <https://vividmaps.com/regions-united-states/>), which will be separated by color.
-
+To find a relationship between population of a state and the number of radio stations we will plot a scatter plot where each data point is a different state. The x-axis will represent the state's population and the y-axis will represent the number of radio stations in the state. To accomplish this, we will need to import another data set that contains the population of each state in 2016. Of course, we will need to group all the rows together based on state and sum up the number of rows based on that value so that there will only be 50 data points. As stated before, we would also like to check for any differences in this relationship based on regions in the US (Regions are defined here: <https://vividmaps.com/regions-united-states/>), which will be separated by color. We think another interesting plot could be a layered histogram comparing the distributions of the population by state/city and the number of radio stations, faceted by region. Therefore, we could see if there is an overall similar shape or pattern to these two distributions that would provide interesting insight.
