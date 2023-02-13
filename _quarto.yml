@@ -8,7 +8,9 @@ website:
       - icon: github
         href: https://github.com/vizdata-s23/project-01-stats_fm
     left:
-      - href: index.qmd
+      
+- text: Project
+    href: index.qmd
       - text: "Proposal"
         href: proposal.qmd
       - text: "Presentation"
