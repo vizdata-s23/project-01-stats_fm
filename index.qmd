@@ -34,11 +34,13 @@ editor: visual
 
 (1-3 paragraphs): In the Discussion section, interpret the results of your analysis. Identify any trends revealed (or not revealed) by the plots. Speculate about why the data looks the way it does.
 
-## Question 2: Title that relates to the question you're answering
+## Question 2: Identifying correlation between population size and the number of radio stations in various states/regions of the United States
 
 ### Introduction
 
 (1-2 paragraphs): Introduction to the question and what parts of the dataset are necessary to answer the question. Also discuss why you're interested in this question.
+
+Population size and density varies across the United States. For example, according to *World Population Review* (<https://worldpopulationreview.com/state-rankings/state-densities>), in 2023 Wyoming had a population of 581,075 and a population density of about 6 people per square mile. Meanwhile, New York has a population of 19,300,000 people and a population density of about 410 people per square mile. Given this radical variability in population and population density, it may be possible to find a correlation between these quantities and the variability in the number of radio stations in each state. Exploring this relationship may help us understand how a population or population density influences the number of radio stations that exist in a particular state or region.
 
 ### Approach
 
