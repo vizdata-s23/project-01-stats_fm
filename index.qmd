@@ -50,6 +50,41 @@ Population size and density varies across the United States. For example, accord
 
 (2-3 code blocks, 2 figures, text/code comments as needed): In this section, provide the code that generates your plots. Use scale functions to provide nice axis labels and guides. You are welcome to use theme functions to customize the appearance of your plot, but you are not required to do so. All plots must be made with **ggplot2**. Do not use base R or lattice plotting functions.
 
+
+```{r}
+#| label:  creating new genre column
+
+library(tidyverse)
+
+state_stations <- read_csv(file = 'data/state_stations.csv')
+
+Genre_Lists <- list(
+
+   c('Religious', 'Christian', 'Gospel', 'Religion', 'Catholic', 'worship'),
+   c('Urban', 'R&B', 'Blues', 'Rhythmic','Rhythym and Blues','Hip Hop', 'mainstream urban', 'Urban adult contemporary', 'Urban contemporary'),
+      c('Pop', 'Contemporary Hit', 'adult contemporary', 'Top 40 (CHR)', 'Hot AC', 'CHR'),
+  c( 'Rock', 'Alternative','Indie'),
+  
+  c('Country','Southern', 'Bluegrass'),
+  
+  c('News', 'News/Talk', 'Talk'))
+
+tmpstr <- Reduce(function(s, lst) gsub(paste0("(", paste(lst, collapse = "|"), ")"), lst[1], s, ignore.case = TRUE),
+                 Genre_Lists, init = state_stations$format)
+tmpGenres <- regmatches(tmpstr,
+                        gregexpr(paste0("(", paste0(sapply(Genre_Lists, `[[`, 1), collapse = "|"), ")"),
+                                 tmpstr, ignore.case = TRUE))
+tmpGenres <- replace(tmpGenres, sapply(tmpGenres, Negate(length)), NA_character_)
+tmpGenres <- sapply(tmpGenres, tail, n = 1)
+tmpGenres[ is.na(tmpGenres) ] <- "Not Found"
+state_stations$Genre <- tmpGenres
+
+state_stations%>%
+  group_by(Genre)%>%
+  summarise(n())
+```
+
+
 ### Discussion
 
 (1-3 paragraphs): In the Discussion section, interpret the results of your analysis. Identify any trends revealed (or not revealed) by the plots. Speculate about why the data looks the way it does.
