@@ -118,7 +118,42 @@ new%>%
   summarise(n())
 ```
 
+```{r}
+#| label: US choropleth map
 
+library(maps)
+
+us_states <- map_data("state")
+
+ggplot() +
+  geom_polygon(data = us_states,
+               aes(x = long, y = lat, group = group),
+               color = "black", fill = "lightpink")
+
+number_stations <- new %>%
+  group_by(state) %>%
+  summarise(n = n())
+
+number_stations <- drop_na(number_stations)
+number_stations$state <- tolower(number_stations$state)
+
+merged_stations <- full_join(us_states, number_stations, 
+                             by = c("region" = "state"))
+
+ggplot() +
+  geom_polygon(data = merged_stations, 
+               aes(x = long, y = lat, group = group, fill = n), 
+               color = "black")
+
+
+
+```
+
+```{r}
+
+
+
+```
 
 ### Discussion
 
@@ -139,7 +174,6 @@ Population size and density varies across the United States. For example, accord
 ### Analysis
 
 (2-3 code blocks, 2 figures, text/code comments as needed): In this section, provide the code that generates your plots. Use scale functions to provide nice axis labels and guides. You are welcome to use theme functions to customize the appearance of your plot, but you are not required to do so. All plots must be made with **ggplot2**. Do not use base R or lattice plotting functions.
-
 
 ### Discussion
 
