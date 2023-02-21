@@ -16,15 +16,19 @@ editor: visual
 
 (1-2 paragraphs): Brief introduction to the dataset. You may repeat some of the information about the dataset provided in the introduction to the dataset on the TidyTuesday repository, paraphrasing on your own terms. Imagine that your project is a standalone document and the grader has no prior knowledge of the dataset.
 
-## Question 1: Title that relates to the question you're answering
+## Question 1: Popular Station Genres Across the U.S. and North Carolina
 
 ### Introduction
 
-(1-2 paragraphs): Introduction to the question and what parts of the dataset are necessary to answer the question. Also discuss why you're interested in this question.
+In this question, we aim to examine where in the United States there is the highest concentration of radio stations and if that varies by the genre of the station. We are interested in seeing if there are regional patterns for a specific kind of radio station (e.g. urban music, religious music, talk stations). In addition to examining patterns across the country, we are curious about what radio stations are the most concentrated in our home state of North Carolina. 
+
+In order to answer this, we will need to use the format column (which specifies the kind of radio station) of the state_stations data set so we can visualize potential patterns across the country. In addition, the state column of the state_stations data set will be important to calculate the number of radio stations in each state. We selected this question because we were curious about the patterns in what kind of radio stations were the most popular, and we thought there may be some relationship between the popularity of a certain genre of radio and the region of that station.
 
 ### Approach
 
-(1-2 paragraphs): Describe what types of plots you are going to make to address your question. For each plot, provide a clear explanation as to why this plot (e.g. boxplot, barplot, histogram, etc.) is best for providing the information you are asking about. The two plots should be of different types, and at least one of the two plots needs to use either color mapping or facets.
+Our first plot will be a choropleth plot of the United States showing the number of radio stations present in each state, faceted by the genre. We selected this kind of density map because we thought it would make it easy to draw comparisons between states and visualize the patterns of where certain types of radio stations were the most prevalent. Prior to creating this plot, we had to bucket the various genres into broader categories. Initially, the format column had about 1,258 unique values. We decided to create 6 unique broad genres and categorize the formats like this. 
+
+Our second plot will be a map of North Carolina with the most populous cities plotted on the map. In addition, it will be a scatterplot of points on top of the North Carolina map to visualize the relationship between the location of radio stations and population dense cities. The points will be colored by radio station genre. We thought a scatterplot would be the best way to visualize this spatial data in comparison to the location of cities, and coloring the data points would be an easy way to distinguish the various station genres.\
 
 ### Analysis
 
@@ -82,6 +86,10 @@ library(tidyverse)
 state_stations <- read_csv(file = 'data/state_stations.csv')
 coords <- read_csv(file = 'data/site_lat_long.csv')
 station_info <- read_csv(file='data/station_info.csv')
+
+#state_stations |>
+  #group_by(format) |>
+  #summarise(n())
 
 Genre_Lists <- list(
 
