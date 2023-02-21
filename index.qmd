@@ -112,8 +112,8 @@ state_stations%>%
 ```{r}
 #| label: joining all DFs together
 
-new<-state_stations |> dplyr::right_join(station_info, by = c("call_sign"))
-new%>%
+new <-state_stations |> dplyr::right_join(station_info, by = c("call_sign"))
+new %>%
   group_by(state)%>%
   summarise(n())
 ```
@@ -131,7 +131,7 @@ ggplot() +
                color = "black", fill = "lightpink")
 
 number_stations <- new %>%
-  group_by(state) %>%
+  group_by(state, Genre) %>%
   summarise(n = n())
 
 number_stations <- drop_na(number_stations)
@@ -143,15 +143,21 @@ merged_stations <- full_join(us_states, number_stations,
 ggplot() +
   geom_polygon(data = merged_stations, 
                aes(x = long, y = lat, group = group, fill = n), 
-               color = "black")
+               color = "black") 
+  facet_wrap(~ Genre) +
+    theme_none()
 
 
 
 ```
 
 ```{r}
+map <- map_data("county")
+nc <- subset(map, region =="north carolina")
 
-
+ggplot(data = nc) + 
+  geom_polygon(aes(x = long, y = lat, group = group), 
+               color = "black", fill = "blue")
 
 ```
 
