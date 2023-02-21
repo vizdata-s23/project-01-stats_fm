@@ -112,6 +112,10 @@ tmpGenres <- sapply(tmpGenres, tail, n = 1)
 tmpGenres[ is.na(tmpGenres) ] <- "Not Found"
 state_stations$Genre <- tmpGenres
 
+state_stations<-state_stations%>%
+filter(!is.na(format))%>%
+filter(Genre!='Not Found')
+
 state_stations%>%
   group_by(Genre)%>%
   summarise(n())
@@ -120,10 +124,17 @@ state_stations%>%
 ```{r}
 #| label: joining all DFs together
 
-new <-state_stations |> dplyr::right_join(station_info, by = c("call_sign"))
-new %>%
-  group_by(state)%>%
-  summarise(n())
+state <-state_stations |> dplyr::right_join(station_info, by = c("call_sign"))
+north_carolina <-state %>%
+  filter(state=="North_Carolina")
+
+
+coords
+```
+
+```{r}
+new <-coords|> dplyr::inner_join(north_carolina, by = c("application_id"="facility_id"))
+new
 ```
 
 ```{r}
@@ -133,10 +144,10 @@ library(maps)
 
 us_states <- map_data("state")
 
-ggplot() +
-  geom_polygon(data = us_states,
-               aes(x = long, y = lat, group = group),
-               color = "black", fill = "lightpink")
+#ggplot() +
+#  geom_polygon(data = us_states,
+#               aes(x = long, y = lat, group = group),
+#              color = "black", fill = "lightpink")
 
 number_stations <- new %>%
   group_by(state, Genre) %>%
@@ -148,20 +159,33 @@ number_stations$state <- tolower(number_stations$state)
 merged_stations <- full_join(us_states, number_stations, 
                              by = c("region" = "state"))
 
+merged_stations <- merged_stations%>%
+  filter(!is.na(region))%>%
+  filter(!is.na(Genre))
+
 ggplot() +
+#   geom_polygon(data = us_states,
+#               aes(x = long, y = lat, group = group),
+#               color = "black", fill = "lightpink")+
   geom_polygon(data = merged_stations, 
                aes(x = long, y = lat, group = group, fill = n), 
-               color = "black") 
-  facet_wrap(~ Genre) +
-    theme_none()
+               color = "black") +
+    facet_wrap(~ Genre, nrow=3, ncol=2, scales="free") +
+  scale_fill_continuous(
+  low = "cornflowerblue",high = "darkblue")+
+    theme_void()
+
 
 
 
 ```
 
+![](https://labs-az-14.oit.duke.edu:30008/chunk_output/4023D1430c283306/A1EA501B/cug972g1zpo71/000056.png)
+
 ```{r}
 map <- map_data("county")
 nc <- subset(map, region =="north carolina")
+
 
 ggplot(data = nc) + 
   geom_polygon(aes(x = long, y = lat, group = group), 
