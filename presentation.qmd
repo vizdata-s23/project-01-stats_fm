@@ -18,14 +18,12 @@ execute:
 
 # Add any additional packages you need to this chunk
 # Remove any packages from this list that you're not using
+
 library(tidyverse)
 library(ggrepel)
 library(scales)
 library(maps)
 library(forcats)
-library(tidymodels)
-library(palmerpenguins)
-library(gt)
 ```
 
 ```{r}
@@ -51,9 +49,10 @@ state_stations <- read_csv(file = 'data/state_stations.csv')
 pop_data <- read_csv("data/population_data_2022.csv")
 ```
 
-# Question 1
+# Question 1: **Popular Station Genres Across the U.S.**
 
 ## New Genre Variable
+
 ```{r}
 #| label: genre list
 #| echo: false
@@ -70,20 +69,17 @@ Genre_Lists <- list(
     c('News', 'News/Talk', 'Talk'))
 ```
 
-- **Religious**: 'Religious', 'Christian', 'Gospel', 'Religion', 'Catholic', 'worship'
+-   **Religious**: 'Religious', 'Christian', 'Gospel', 'Religion', 'Catholic', 'worship'
 
-- **Urban**: 'Urban', 'R&B', 'Blues', 'Rhythmic','Rhythym and Blues','Hip Hop', 
-     'mainstream urban', 'Urban adult contemporary', 'Urban contemporary'
-     
-- **Pop**: 'Pop', 'Contemporary Hit', 'adult contemporary', 'Top 40 (CHR)', 
-    'Hot AC', 'CHR'
-    
-- **Rock**: 'Rock', 'Alternative','Indie'
+-   **Urban**: 'Urban', 'R&B', 'Blues', 'Rhythmic','Rhythym and Blues','Hip Hop', 'mainstream urban', 'Urban adult contemporary', 'Urban contemporary'
 
-- **Country**: 'Country','Southern', 'Bluegrass'
+-   **Pop**: 'Pop', 'Contemporary Hit', 'adult contemporary', 'Top 40 (CHR)', 'Hot AC', 'CHR'
 
-- **News/Talk**: 'News', 'News/Talk', 'Talk'
+-   **Rock**: 'Rock', 'Alternative','Indie'
 
+-   **Country**: 'Country','Southern', 'Bluegrass'
+
+-   **News/Talk**: 'News', 'News/Talk', 'Talk'
 
 ```{r}
 #| label: data prep for Q1
@@ -92,6 +88,7 @@ Genre_Lists <- list(
 
 
 #https://stackoverflow.com/questions/62396968/how-can-i-group-a-column-based-off-of-a-list-of-string-patterns-in-r
+
 state_stations <- read_csv(file = 'data/state_stations.csv')
 
 tmpstr <- Reduce(function(s, lst) gsub(paste0("(", paste(lst, collapse = "|"),
@@ -141,13 +138,11 @@ CFT<- state_stations|>
 #| echo: false
 #| warning: false
 #| fig-alt: |
-#|   Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all 
-#|   the others combined together. There is a relatively strong, positive 
-#|   relationship between the two variables. The Adelie penguins are clustered 
-#|   together but they don't exhibit a different trend than the rest of the 
-#|   penguins.
+#|  The trends are not very strong. News, Pop, Rock, and Urban all have a  
+#|  relatively consistent number of radio stations across the US. However, for the #|  Country genre, Texas has a much higher concentration of radio stations than the #|  rest of the states. In the Religion genre, Texas has by far the highest 
+#|  concentration with over 300 religious stations.
 
-# Uses modified penguins dataset from previous chunk
+
 # Play around with height and width until you're happy with the look
 
 ggplot() +
@@ -166,7 +161,6 @@ ggplot() +
 
 ```
 
-
 ## Plot 2
 
 ```{r}
@@ -174,11 +168,9 @@ ggplot() +
 #| echo: false
 #| warning: false
 #| fig-alt: |
-#|   Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all 
-#|   the others combined together. There is a relatively strong, positive 
-#|   relationship between the two variables. The Adelie penguins are clustered 
-#|   together but they don't exhibit a different trend than the rest of the 
-#|   penguins.
+#|   Body mass The bar plot reveals that within these three states, the religion 
+#|   genre has by far the most stations at almost 800. Texas stations make up almost #|   half of those stations. The genre with the second most stations across these 
+#|   states is country, which has a little over 300 observations. Again, Texas makes #|   up the majority of these at about 200 stations within this category, the rest #|   being fairly evenly split among California and Florida.
 
 ggplot(data=CFT, aes(x=fct_infreq(Genre), fill=state))+geom_bar() +
   scale_fill_manual(values=c('gold', 'darkseagreen3', 'dodgerblue2')) +
@@ -192,8 +184,9 @@ ggplot(data=CFT, aes(x=fct_infreq(Genre), fill=state))+geom_bar() +
 
 ```
 
+# Question 2: Identifying correlation between population size and the number of radio stations in various states/regions of the United States
 
-# Question 2
+### 
 
 ```{r}
 #| label: data prep for Q2
@@ -323,8 +316,6 @@ or text in two columns $^*$
 \[\*\] And add footnotes
 :::
 
-
-
 ## Plots
 
 ```{r}
@@ -334,11 +325,8 @@ or text in two columns $^*$
 # In this chunk I'm doing a bunch of analysis that I don't want to present 
 # in my slides. But I need the resulting data frame for a plot I want to present.
 
-penguins_modified <- penguins %>%
-  mutate(species = fct_other(species, keep = "Adelie"))
+
 ```
-
-
 
 ## Plot and text
 
@@ -358,9 +346,7 @@ penguins_modified <- penguins %>%
 # See how I changed out-width and fig-width from defaults
 # to make the figure bigger
 
-ggplot(penguins, aes(x = bill_length_mm, y = species, color = species)) +
-  geom_boxplot() +
-  theme_minimal()
+
 ```
 :::
 :::
@@ -374,31 +360,11 @@ If you want to generate a table, make sure it is in the HTML format (instead of 
 ```{r}
 #| label: penguins-table
 
-gt(head(penguins))
+
 ```
 
 ## Images
 
 ![Image credit: Danielle Navarro, Percolate.](images/watercolour_sys02_img34_teacup-ocean.png)
 
-## Math Expressions {.smaller}
-
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. \$\alpha+\beta\$ renders $\alpha+\beta$. You can use the display style with double dollar signs:
-
-    $$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-
-Limitations:
-
-1.  The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
-
-2.  There should not be spaces after the opening `$` or before the closing `$`.
-
-# Wrap up
-
-## Feeling adventurous?
-
--   You are welcomed to use the default styling of the slides. In fact, that's what I expect majority of you will do. You will differentiate yourself with the content of your presentation.
-
--   But some of you might want to play around with slide styling. Some solutions for this can be found at https://quarto.org/docs/presentations/revealjs.
+##  {.smaller}
