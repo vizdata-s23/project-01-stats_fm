@@ -1,7 +1,7 @@
 ---
-title: "Project title"
+title: "Exploring the Distribution of Radio Stations Across the U.S."
 subtitle: "STA/ISS 313 - Spring 2023 - Project 1"
-author: "Team Name"
+author: "Stats FM"
 title-slide-attributes:
   data-background-image: images/watercolour_sys02_img34_teacup-ocean.jpg
   data-background-size: stretch
@@ -19,6 +19,10 @@ execute:
 # Add any additional packages you need to this chunk
 # Remove any packages from this list that you're not using
 library(tidyverse)
+library(ggrepel)
+library(scales)
+library(maps)
+library(forcats)
 library(tidymodels)
 library(palmerpenguins)
 library(gt)
@@ -43,17 +47,260 @@ knitr::opts_chunk$set(
 #| include: false
 
 # Load your data here
+state_stations <- read_csv(file = 'data/state_stations.csv')
+pop_data <- read_csv("data/population_data_2022.csv")
 ```
 
-# Using Quarto for presentations
+# Question 1
 
-## Quarto
+## New Genre Variable
+```{r}
+#| label: genre list
+#| echo: false
+#| warning: false
 
--   The presentation is created using the Quarto CLI
+Genre_Lists <- list(
+    c('Religious', 'Christian', 'Gospel', 'Religion', 'Catholic', 'worship'),
+    c('Urban', 'R&B', 'Blues', 'Rhythmic','Rhythym and Blues','Hip Hop', 
+     'mainstream urban', 'Urban adult contemporary', 'Urban contemporary'),
+    c('Pop', 'Contemporary Hit', 'adult contemporary', 'Top 40 (CHR)', 
+    'Hot AC', 'CHR'),
+    c( 'Rock', 'Alternative','Indie'),
+    c('Country','Southern', 'Bluegrass'),
+    c('News', 'News/Talk', 'Talk'))
+```
 
--   `##` sets the start of a new slide
+- **Religious**: 'Religious', 'Christian', 'Gospel', 'Religion', 'Catholic', 'worship'
 
-## Layouts
+- **Urban**: 'Urban', 'R&B', 'Blues', 'Rhythmic','Rhythym and Blues','Hip Hop', 
+     'mainstream urban', 'Urban adult contemporary', 'Urban contemporary'
+     
+- **Pop**: 'Pop', 'Contemporary Hit', 'adult contemporary', 'Top 40 (CHR)', 
+    'Hot AC', 'CHR'
+    
+- **Rock**: 'Rock', 'Alternative','Indie'
+
+- **Country**: 'Country','Southern', 'Bluegrass'
+
+- **News/Talk**: 'News', 'News/Talk', 'Talk'
+
+
+```{r}
+#| label: data prep for Q1
+#| echo: false
+#| warning: false
+
+
+#https://stackoverflow.com/questions/62396968/how-can-i-group-a-column-based-off-of-a-list-of-string-patterns-in-r
+state_stations <- read_csv(file = 'data/state_stations.csv')
+
+tmpstr <- Reduce(function(s, lst) gsub(paste0("(", paste(lst, collapse = "|"),
+                ")"), lst[1], s, ignore.case = TRUE),
+                Genre_Lists, init = state_stations$format)
+
+tmpGenres <- regmatches(tmpstr,
+                gregexpr(paste0("(", paste0(sapply(Genre_Lists, `[[`,
+                1), collapse = "|"), ")"),tmpstr, ignore.case = TRUE))
+
+tmpGenres <- replace(tmpGenres, sapply(tmpGenres, Negate(length)),
+                NA_character_)
+
+tmpGenres <- sapply(tmpGenres, tail, n = 1)
+tmpGenres[ is.na(tmpGenres) ] <- "Not Found"
+state_stations$Genre <- tmpGenres
+
+state_stations<-state_stations|>
+  filter(!is.na(format))|>
+  filter(Genre!='Not Found')
+
+us_states <- map_data("state")
+
+number_stations <- state_stations |>
+  group_by(state, Genre) |>
+  summarise(n = n())
+
+number_stations <- drop_na(number_stations)
+number_stations$state <- tolower(number_stations$state)
+merged_stations <- full_join(us_states, number_stations, 
+                             by = c("region" = "state"))
+
+merged_stations <- merged_stations|>
+  filter(!is.na(region))|>
+  filter(!is.na(Genre))
+
+CFT<- state_stations|>
+  filter(state == "Texas" | state =="California" | state == "Florida") |>
+  select(c(state, Genre)) |>
+  group_by(state, Genre)
+```
+
+## Plot 1
+
+```{r}
+#| label: Q1 plot-1
+#| echo: false
+#| warning: false
+#| fig-alt: |
+#|   Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all 
+#|   the others combined together. There is a relatively strong, positive 
+#|   relationship between the two variables. The Adelie penguins are clustered 
+#|   together but they don't exhibit a different trend than the rest of the 
+#|   penguins.
+
+# Uses modified penguins dataset from previous chunk
+# Play around with height and width until you're happy with the look
+
+ggplot() +
+  geom_polygon(data = merged_stations, 
+               aes(x = long, y = lat, group = group, fill = n), 
+               color = "black") +
+  facet_wrap(~ Genre, nrow=3, ncol=2, scales="free") +
+  scale_fill_continuous(
+  low = "darkseagreen2",high = "dodgerblue4") +
+  labs(x = "", 
+      title ="Density of Radio Stations by State",
+      subtitle = "Faceted by Selected Genres",
+      fill = "Count",
+      caption = "Source: Wikipedia.org") + 
+      theme_void()
+
+```
+
+
+## Plot 2
+
+```{r}
+#| label: Q1 plot-2
+#| echo: false
+#| warning: false
+#| fig-alt: |
+#|   Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all 
+#|   the others combined together. There is a relatively strong, positive 
+#|   relationship between the two variables. The Adelie penguins are clustered 
+#|   together but they don't exhibit a different trend than the rest of the 
+#|   penguins.
+
+ggplot(data=CFT, aes(x=fct_infreq(Genre), fill=state))+geom_bar() +
+  scale_fill_manual(values=c('gold', 'darkseagreen3', 'dodgerblue2')) +
+  theme_minimal() +
+  labs(x = "Genre", 
+      y = "Frequency",
+      title ="Distribution of Radio Stations by Genre",
+      subtitle = "Across California, Florida, and Texas",
+      fill="State",
+      caption = "Source: Wikipedia.org")
+
+```
+
+
+# Question 2
+
+```{r}
+#| label: data prep for Q2
+#| echo: false
+#| warning: false
+
+pop_data <- read_csv("data/population_data_2022.csv")
+
+# label states
+pop_data <- pop_data |> 
+  mutate(
+    region_name = case_when(
+      REGION == 1 ~ "NorthEast",
+      REGION == 2 ~ "MidWest",
+      REGION == 3 ~ "South",
+      REGION == 4 ~ "West",)) |> 
+    select(region_name, NAME, POPESTIMATE2022)
+
+# remove region names
+pop_data <- pop_data[-c(1:14),]
+
+# remove Puerto Rico
+pop_data <- subset(pop_data, region_name != "Puerto Rico")
+
+# remove '_" from space station state colums
+state_stations$state <- sub("_", " ", state_stations$state)
+
+state_stations_pop <- merge(x = state_stations, y = pop_data, by.x = "state",
+                        by.y = "NAME")
+
+state_stations_pop_reg <- distinct(state_stations_pop |> group_by(state) |> 
+                            summarise(n = n(), region_name = region_name,
+                            pop_2022 = POPESTIMATE2022))
+station_count <- distinct(state_stations_pop |> 
+      group_by(state) |> 
+      summarise(n=n(), region_name=region_name, population = POPESTIMATE2022))
+trial<-station_count |>
+  mutate(new_population=population/10000) |>
+  pivot_longer(cols=c("n", "new_population"),
+               names_to="Distribution",
+               values_to='x_value')
+
+```
+
+## Plot 1
+
+```{r}
+#| label: Q2 plot-1
+#| echo: false
+#| warning: false
+#| fig-alt: |
+#|   Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all 
+#|   the others combined together. There is a relatively strong, positive 
+#|   relationship between the two variables. The Adelie penguins are clustered 
+#|   together but they don't exhibit a different trend than the rest of the 
+#|   penguins.
+
+# Uses modified penguins dataset from previous chunk
+# Play around with height and width until you're happy with the look
+
+#https://stackoverflow.com/questions/6957549/overlaying-histograms-with-ggplot2-in-r
+ggplot(data=trial, aes(x=x_value, fill= Distribution)) +
+  geom_histogram(alpha = 0.3,bins=45,position="identity") + 
+  xlim(0,1500) +
+  labs(
+    x = "Nummber of Station/Population (scaled by 0.0001)",
+    y = "Frequency",
+    title = "Distribution of Number of Radio Stations and Population by State",
+    subtitle = "Population scaled by 0.0001") + 
+    theme_minimal()
+```
+
+## Plot 2
+
+```{r}
+#| label: Q2 plot-2
+#| echo: false
+#| warning: false
+#| fig-alt: |
+#|   Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all 
+#|   the others combined together. There is a relatively strong, positive 
+#|   relationship between the two variables. The Adelie penguins are clustered 
+#|   together but they don't exhibit a different trend than the rest of the 
+#|   penguins.
+
+# Uses modified penguins dataset from previous chunk
+# Play around with height and width until you're happy with the look
+
+ggplot(state_stations_pop_reg, aes(x = pop_2022, y = n, color = region_name)) +
+  geom_smooth(method = "lm", se = FALSE, size = 0.75, linetype = "longdash") +
+  geom_point(alpha = 0.6) +
+  geom_text_repel(
+    data=subset(state_stations_pop_reg, pop_2022 > 15000000 | n > 500), 
+    aes(label = state), 
+    color = "black", 
+    size = 3) +
+  scale_x_continuous(labels = label_number(scale_cut = cut_short_scale())) +
+  scale_color_manual(values = c("#333333", "#E69F00", "#56B4E9", "#009E73")) +
+  labs(x = "Population", 
+      y = "Number of Radio Stations", 
+      title = "Population vs. Number of Radio Stations in the US",
+      subtitle = "Colored by Region",
+      color = "Region") + 
+      theme_minimal()
+```
+
+## extra
 
 You can use plain text
 
@@ -76,16 +323,7 @@ or text in two columns $^*$
 \[\*\] And add footnotes
 :::
 
-## Code
 
-```{r}
-#| label: boring-regression
-
-# a boring regression
-model <- lm(dist ~ speed, data = cars)
-tidy(model)
-glance(model)
-```
 
 ## Plots
 
@@ -100,27 +338,7 @@ penguins_modified <- penguins %>%
   mutate(species = fct_other(species, keep = "Adelie"))
 ```
 
-```{r}
-#| label: plot-penguins
-#| echo: false
-#| warning: false
-#| fig-alt: |
-#|   Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all 
-#|   the others combined together. There is a relatively strong, positive 
-#|   relationship between the two variables. The Adelie penguins are clustered 
-#|   together but they don't exhibit a different trend than the rest of the 
-#|   penguins.
 
-# Uses modified penguins dataset from previous chunk
-# Play around with height and width until you're happy with the look
-
-ggplot(
-  penguins_modified, 
-  aes(x = flipper_length_mm, y = body_mass_g, color = species)
-  ) +
-  geom_point() + 
-  theme_minimal()
-```
 
 ## Plot and text
 
