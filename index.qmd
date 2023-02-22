@@ -206,6 +206,7 @@ state_stations_pop_reg <- distinct(state_stations_pop %>% group_by(state) %>%
 ```{r}
 
 library(ggrepel)
+library(scales)
 
 ggplot(state_stations_pop_reg, aes(x = pop_2022, y = n, color = region_name)) +
   geom_smooth(method = "lm", se = FALSE, size = 0.75, linetype = "longdash") +
@@ -223,42 +224,21 @@ ggplot(state_stations_pop_reg, aes(x = pop_2022, y = n, color = region_name)) +
 
 station_count <- distinct(state_stations_pop %>% group_by(state) %>% summarise(n=n(), region_name=region_name, population = POPESTIMATE2022))
 
-ggplot(
-  station_count
-) +
-  geom_density(
-    aes(
-      x = n,
-    )
-  ) +
-  theme_minimal() +
-  labs(
-    x = "Number of Stations per State",
-    y = "Density",
-    title = "Distribution of Number of Stations By Sate",
-    subtitle = "By Region"
-  )
-
+trial<-station_count%>%
+  mutate(newpopulation=population/10000)%>%
+  pivot_longer(cols=c("n", "newpopulation"),
+               names_to="type",
+               values_to='amount')
+ggplot(data=trial, aes(x=amount, fill= type)) +
+ geom_histogram(alpha = 0.3,bins=45,position="identity") + xlim(0,1500)+
+  theme_minimal()+
+    labs(
+    x = "Nummber of Station/Population (scaled by 0.0001)",
+    y = "Frequency",
+    title = "Distribution of Number of Radio Stations and Population by State",
+    subtitle = "Population scaled by 0.0001")
 ```
 
 ```{r}
-ggplot(station_count) +
-  geom_bin2d(
-    aes(x = n, y = population), 
-    binwidth = c(0.25, 500)
-    )
-```
-
-```{r}
-ggplot(
-  station_count
-) +
-  geom_point(
-    aes(
-      x = n,
-      y = state,
-      
-    )
-  ) + 
-  facet_wrap(~region_name)
+trial
 ```
