@@ -198,16 +198,19 @@ pop_data <- subset(pop_data, region_name != "Puerto Rico")
 state_stations$state <- sub("_", " ", state_stations$state)
 
 state_stations_pop <- merge(x = state_stations, y = pop_data, by.x = "state", by.y = "NAME")
+
+state_stations_pop_reg <- distinct(state_stations_pop %>% group_by(state) %>% 
+                           summarise(n = n(), region_name = region_name, pop_2022 = POPESTIMATE2022))
 ```
 
 ```{r}
 
 library(ggrepel)
 
-ggplot(station_temp, aes(x = pop_2022, y = n, color = region_name)) +
+ggplot(state_stations_pop_reg, aes(x = pop_2022, y = n, color = region_name)) +
   geom_smooth(method = "lm", se = FALSE, size = 0.75, linetype = "longdash") +
   geom_point(alpha = 0.6) +
-  geom_text_repel(data=subset(station_temp, pop_2022 > 15000000 | n > 500), aes(label = state), color = "black", size = 3) +
+  geom_text_repel(data=subset(state_stations_pop_reg, pop_2022 > 15000000 | n > 500), aes(label = state), color = "black", size = 3) +
   scale_x_continuous(labels = label_number(scale_cut = cut_short_scale())) +
   scale_color_manual(values = c("#333333", "#E69F00", "#56B4E9", "#009E73")) +
   labs(x = "Population", y = "Number of Radio Stations", title = "Population vs. Number of Radio Stations in the US",
