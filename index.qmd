@@ -201,6 +201,21 @@ state_stations_pop <- merge(x = state_stations, y = pop_data, by.x = "state", by
 ```
 
 ```{r}
+
+library(ggrepel)
+
+ggplot(station_temp, aes(x = pop_2022, y = n, color = region_name)) +
+  geom_smooth(method = "lm", se = FALSE, size = 0.75, linetype = "longdash") +
+  geom_point(alpha = 0.6) +
+  geom_text_repel(data=subset(station_temp, pop_2022 > 15000000 | n > 500), aes(label = state), color = "black", size = 3) +
+  scale_x_continuous(labels = label_number(scale_cut = cut_short_scale())) +
+  scale_color_manual(values = c("#333333", "#E69F00", "#56B4E9", "#009E73")) +
+  labs(x = "Population", y = "Number of Radio Stations", title = "Population vs. Number of Radio Stations in the US",
+       subtitle = "Colored by Region",
+       color = "Region") + theme_minimal()
+```
+
+```{r}
 #| label: Q2-2 ()
 
 station_count <- distinct(state_stations_pop %>% group_by(state) %>% summarise(n=n(), region_name=region_name, population = POPESTIMATE2022))
