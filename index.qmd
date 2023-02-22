@@ -35,50 +35,6 @@ Our second plot will be a map of North Carolina with the most populous cities pl
 (2-3 code blocks, 2 figures, text/code comments as needed): In this section, provide the code that generates your plots. Use scale functions to provide nice axis labels and guides. You are welcome to use theme functions to customize the appearance of your plot, but you are not required to do so. All plots must be made with **ggplot2**. Do not use base R or lattice plotting functions.
 
 ```{r}
-#| label: latitude and longitude data generation
-
-# raw_contour <- read_delim(
-#   "data/FM_service_contour_current.txt",
-#   delim = "|"
-# )
-# 
-# conv_contour <- raw_contour |>
-#   select(-last_col()) |>
-#   set_names(nm = c(
-#     "application_id", "service", "lms_application_id", "dts_site_number", "transmitter_site",
-#     glue::glue("deg_{0:360}")
-#   ))
-
-# lng_contour <- conv_contour |>
-#   separate(
-#     transmitter_site, 
-#     into = c("site_lat", "site_long"), 
-#     sep = " ,") |>
-#   pivot_longer(
-#     names_to = "angle",
-#     values_to = "values",
-#     cols = deg_0:deg_360
-#   ) |>
-#   mutate(
-#     angle = str_remove(angle, "deg_"),
-#     angle = as.integer(angle)
-#   ) |>
-#   separate(
-#     values,
-#     into = c("deg_lat", "deg_lng"),
-#     sep = " ,"
-#   )
-
-# site_lat_long <- lng_contour %>% 
-#   select(application_id, service, lms_application_id, site_lat, site_long)
-# 
-# site_lat_long <- unique(site_lat_long)
-# 
-# write_csv(site_lat_long, "data/site_lat_long.csv")
-
-```
-
-```{r}
 #| label:  creating new genre column
 
 library(tidyverse)
@@ -121,21 +77,6 @@ state_stations%>%
   summarise(n())
 ```
 
-```{r}
-#| label: joining all DFs together
-
-state <-state_stations |> dplyr::right_join(station_info, by = c("call_sign"))
-north_carolina <-state %>%
-  filter(state=="North_Carolina")
-
-
-coords
-```
-
-```{r}
-new <-coords|> dplyr::inner_join(north_carolina, by = c("application_id"="facility_id"))
-new
-```
 
 ```{r}
 #| label: US choropleth map
@@ -149,7 +90,7 @@ us_states <- map_data("state")
 #               aes(x = long, y = lat, group = group),
 #              color = "black", fill = "lightpink")
 
-number_stations <- new %>%
+number_stations <- state_stations %>%
   group_by(state, Genre) %>%
   summarise(n = n())
 
@@ -170,27 +111,39 @@ ggplot() +
   geom_polygon(data = merged_stations, 
                aes(x = long, y = lat, group = group, fill = n), 
                color = "black") +
-    facet_wrap(~ Genre, nrow=3, ncol=2, scales="free") +
+  facet_wrap(~ Genre, nrow=3, ncol=2, scales="free") +
   scale_fill_continuous(
-  low = "cornflowerblue",high = "darkblue")+
-    theme_void()
+  low = "darkseagreen2",high = "dodgerblue4")+
+  labs(x = "", 
+      title ="Density of Radio Stations by State",
+      subtitle = "Faceted by Selected Genres",
+       fill="Count",
+       caption = "Source: Wikipedia.org") +theme_void()
 
 
 
 
 ```
 
-![](https://labs-az-14.oit.duke.edu:30008/chunk_output/4023D1430c283306/A1EA501B/cug972g1zpo71/000056.png)
-
 ```{r}
-map <- map_data("county")
-nc <- subset(map, region =="north carolina")
+library(forcats)
+
+CFT<- state_stations%>%
+  filter(state == "Texas" | state =="California" | state == "Florida")%>%
+  select(c(state, Genre))%>%
+  group_by(state, Genre)
 
 
-ggplot(data = nc) + 
-  geom_polygon(aes(x = long, y = lat, group = group), 
-               color = "black", fill = "blue")
 
+ggplot(data=CFT, aes(x=fct_infreq(Genre), fill=state))+geom_bar() +
+  scale_fill_manual(values=c('gold', 'darkseagreen3', 'dodgerblue2'))+
+  theme_minimal() +
+  labs(x = "Genre", 
+       y = "Frequency",
+      title ="Distribution of Radio Stations by Genre",
+      subtitle = "Across California, Florida, and Texas",
+       fill="State",
+       caption = "Source: Wikipedia.org")
 ```
 
 ### Discussion
