@@ -14,19 +14,19 @@ editor: visual
 
 ## Introduction
 
-(1-2 paragraphs): Brief introduction to the dataset. You may repeat some of the information about the dataset provided in the introduction to the dataset on the TidyTuesday repository, paraphrasing on your own terms. Imagine that your project is a standalone document and the grader has no prior knowledge of the dataset.
+This dataset contains information concerning radio stations in all 50 states of the United States. The data was mined from the ["Lists of Radio Stations in the United States"](https://en.wikipedia.org/wiki/Lists_of_radio_stations_in_the_United_States) Wikipedia page in 2022 and contains information such as the abbreviated name or call sign of the radio station (`call_sign`), the channel (`frequency`), the licensee (`licensee`), the city where the station is located (`city`), the kind of content of the radio station (`format`), and the state where the radio station is located (`city`). All of these variables are categorical variables, and we will use external data to further analyze trends in our data.
 
-## Question 1:  **Popular Station Genres Across the U.S.**
+## Question 1: **Popular Station Genres Across the U.S.**
 
 ### Introduction
 
-In this question, we aim to examine where in the United States there is the highest concentration of radio stations and if that varies by the genre of the station. We are interested in seeing if there are regional patterns for a specific kind of radio station (e.g. urban music, religious music, talk stations). In addition to examining patterns across the country, we are curious about what radio stations are the most concentrated in our home state of North Carolina.
+In this question, we aim to examine where in the United States there is the highest concentration of radio stations and if that varies by the genre of the station. We are interested in seeing if there are regional patterns for a specific genre of radio station (e.g. urban music, religious music, talk stations), specifically on the state level.
 
-In order to answer this, we will need to use the format column (which specifies the kind of radio station) of the state_stations data set so we can visualize potential patterns across the country. In addition, the state column of the state_stations data set will be important to calculate the number of radio stations in each state. We selected this question because we were curious about the patterns in what kind of radio stations were the most popular, and we thought there may be some relationship between the popularity of a certain genre of radio and the region of that station.
+In order to answer this, we will need to use the format column (which specifies the kind of radio station) so we can visualize potential patterns across the country. In addition, the state column of will be important to calculate the number of radio stations in each state. We selected this question because we were curious about what patterns may exist in the most popular genres of radio in the U.S., and we thought there may be some relationship between the popularity of a certain genre of radio and the region of that station. Throughout our research, we also take a closer look at certain states such as Texas, California, and Florida, and examine trends more closely to better understand the breakdown of radio stations in diverse states.
 
 ### Approach
 
-Our first plot will be a choropleth plot of the United States showing the number of radio stations present in each state, faceted by the genre. We selected this kind of density map because we thought it would make it easy to draw comparisons between states and visualize the patterns of where certain types of radio stations were the most prevalent. Prior to creating this plot, we had to bucket the various genres into broader categories. Initially, the format column had about 1,258 unique values. We decided to create 6 unique broad genres and categorize the formats like this.
+Our first plot will be a choropleth plot of the United States showing the number of radio stations present in each state, faceted by the genre. We selected this kind of density map because we thought it would make it easy to draw comparisons between states and visualize the patterns of where certain types of radio stations were the most prevalent. Prior to creating this plot, we had to bucket the various genres into broader categories. Initially, the format column had about 1,258 unique values. We decided to create 6 unique broad genres (chosen from the most popular radio station genres in [Statista's 2021 Global Consumer Survey](https://www.statista.com/chart/24877/most-popular-us-radio-content/) ) and categorize the formats into those genres using a script. The first element of each list represents the name of that genre, and each list consists of keywords used to identify if one of the words from that list appeared in the format string, thus categorizing it as that genre.
 
 ```{r}
 #| label: word lists to find Genres
@@ -42,11 +42,9 @@ Genre_Lists <- list(
     c('News', 'News/Talk', 'Talk'))
 ```
 
-Our second plot will be a map of North Carolina with the most populous cities plotted on the map. In addition, it will be a scatterplot of points on top of the North Carolina map to visualize the relationship between the location of radio stations and population dense cities. The points will be colored by radio station genre. We thought a scatterplot would be the best way to visualize this spatial data in comparison to the location of cities, and coloring the data points would be an easy way to distinguish the various station genres.\
+Our second plot is a bar chart that shows the number of radio stations from each genre across California, Texas, and Florida, three states that we determined from our choropleth map that had high concentrations of radio stations in a variety of genres. We figured a bar plot would be the best way to display the number of radio stations per genre in these three states, and coloring the states within the bars would enable effective comparison in the number of radio stations of that genre.
 
 ### Analysis
-
-(2-3 code blocks, 2 figures, text/code comments as needed): In this section, provide the code that generates your plots. Use scale functions to provide nice axis labels and guides. You are welcome to use theme functions to customize the appearance of your plot, but you are not required to do so. All plots must be made with **ggplot2**. Do not use base R or lattice plotting functions.
 
 ```{r}
 #| label:  creating new genre column
@@ -83,7 +81,7 @@ state_stations<-state_stations|>
 #  summarise(n())
 ```
 
-```{r}
+```{r, fig.dim = c(8, 6)}
 #| label: US choropleth map
 #| echo: false
 #| warning: false
@@ -113,16 +111,13 @@ ggplot() +
                color = "black") +
   facet_wrap(~ Genre, nrow=3, ncol=2, scales="free") +
   scale_fill_continuous(
-  low = "darkseagreen2",high = "dodgerblue4") +
+  low = "darkseagreen1",high = "dodgerblue4") +
   labs(x = "", 
       title ="Density of Radio Stations by State",
       subtitle = "Faceted by Selected Genres",
       fill = "Count",
       caption = "Source: Wikipedia.org") + 
       theme_void()
-
-
-
 
 ```
 
@@ -154,7 +149,11 @@ ggplot(data=CFT, aes(x=fct_infreq(Genre), fill=state))+geom_bar() +
 
 ### Discussion
 
-(1-3 paragraphs): In the Discussion section, interpret the results of your analysis. Identify any trends revealed (or not revealed) by the plots. Speculate about why the data looks the way it does.
+In the first plot, the trends are not very strong. News, Pop, Rock, and Urban all have a relatively consistent number of radio stations across the US. However, for the Country genre, Texas has a much higher concentration of radio stations than the rest of the states. In the Religion genre, Texas has by far the highest concentration with over 300 religious stations. Florida and California followed with somewhere around 200 stations in that category. Overall, we did not see very strong regional patterns for each genre of radio station. The spread of genres within the dataset was mostly even with the exception of the religion genre, which had the most observations. This is likely why the trends in the religion genre are more obvious; since there are more observations in this genre, the variation of density of stations across the US is easier to see.
+
+For our second plot, we further our examination of the states with the most radio stations by focusing on the three that stuck out in plot 1 due to the overall higher density of radio stations compared to the other states: Texas, California, and Florida. The bar plot reveals that within these three states, the religion genre has by far the most stations at almost 800. Texas stations make up almost half of those stations. The genre with the second most stations across these states is country, which has a little over 300 observations. Again, Texas makes up the majority of these at about 200 stations within this category, the rest being fairly evenly split among California and Florida. The rest of the station genres across these states are News at a little under 300 stations, Pop at a bit over 200 stations, Rock with a little less than 200 stations, and lastly, Urban with a bit over 100 stations. Within these four genres, the spread of stations is rather even across the three states.
+
+From these two plots, we can definitely conclude that Texas has overall more radio stations than most states, with the most popular genres being Religious and Country, which seems to make sense given the influence of the culture for a state in the South that is still predominantly influenced by the Christian religion. It is definitely important to consider the fact that we created these genres using key words from the original format column and there are some observations that were not included if their format did not fit well into one of our categories. Although we did review the radio stations in our new genres and which stations were, this certainly could have affected our visualization and interpretation of the results.
 
 ## Question 2: Identifying correlation between population size and the number of radio stations in various states/regions of the United States
 
@@ -227,10 +226,13 @@ ggplot(data=trial, aes(x=x_value, fill= Distribution)) +
   geom_histogram(alpha = 0.3,bins=45,position="identity") + 
   xlim(0,1500) +
   labs(
-    x = "Nummber of Station/Population (scaled by 0.0001)",
+    x = "Number of Stations/Population (scaled by 0.0001)",
     y = "Frequency",
-    title = "Distribution of Number of Radio Stations and Population by State",
-    subtitle = "Population scaled by 0.0001") + 
+    title = "Distribution of Radio Stations and Population by State",
+    subtitle = "Population scaled by 0.0001",
+    caption = "Source: Wikipedia.org and Census Bureau") + 
+    scale_fill_manual(labels=c("Radio Stations", "Population"),
+          values=c("dodgerblue2", "firebrick2"))+
     theme_minimal()
 ```
 
@@ -257,7 +259,8 @@ ggplot(state_stations_pop_reg, aes(x = pop_2022, y = n, color = region_name)) +
       y = "Number of Radio Stations", 
       title = "Population vs. Number of Radio Stations in the US",
       subtitle = "Colored by Region",
-      color = "Region") + 
+      color = "Region",
+      caption = "Source: Wikipedia.org and Census Bureau") + 
       theme_minimal()
 ```
 

@@ -3,8 +3,9 @@ title: "Exploring the Distribution of Radio Stations Across the U.S."
 subtitle: "STA/ISS 313 - Spring 2023 - Project 1"
 author: "Stats FM"
 title-slide-attributes:
-  data-background-image: images/watercolour_sys02_img34_teacup-ocean.jpg
+  data-background-image: images/radio_mic.jpeg
   data-background-size: stretch
+  data-background-opacity: '0.5'
   data-slide-number: none
 format: revealjs
 editor: visual
@@ -49,7 +50,9 @@ state_stations <- read_csv(file = 'data/state_stations.csv')
 pop_data <- read_csv("data/population_data_2022.csv")
 ```
 
-# Question 1: **Popular Station Genres Across the U.S.**
+# Question 1:
+
+**Popular Station Genres Across the U.S.**
 
 ## New Genre Variable
 
@@ -133,17 +136,12 @@ CFT<- state_stations|>
 
 ## Plot 1
 
-```{r}
+```{r, fig.dim = c(8, 6)}
 #| label: Q1 plot-1
 #| echo: false
 #| warning: false
-#| fig-alt: |
-#|  The trends are not very strong. News, Pop, Rock, and Urban all have a  
-#|  relatively consistent number of radio stations across the US. However, for the #|  Country genre, Texas has a much higher concentration of radio stations than the #|  rest of the states. In the Religion genre, Texas has by far the highest 
-#|  concentration with over 300 religious stations.
 
-
-# Play around with height and width until you're happy with the look
+# uses cleaned data from above chunk and plots choropleth map
 
 ggplot() +
   geom_polygon(data = merged_stations, 
@@ -151,7 +149,7 @@ ggplot() +
                color = "black") +
   facet_wrap(~ Genre, nrow=3, ncol=2, scales="free") +
   scale_fill_continuous(
-  low = "darkseagreen2",high = "dodgerblue4") +
+  low = "darkseagreen1",high = "dodgerblue4") +
   labs(x = "", 
       title ="Density of Radio Stations by State",
       subtitle = "Faceted by Selected Genres",
@@ -167,11 +165,8 @@ ggplot() +
 #| label: Q1 plot-2
 #| echo: false
 #| warning: false
-#| fig-alt: |
-#|   Body mass The bar plot reveals that within these three states, the religion 
-#|   genre has by far the most stations at almost 800. Texas stations make up almost #|   half of those stations. The genre with the second most stations across these 
-#|   states is country, which has a little over 300 observations. Again, Texas makes #|   up the majority of these at about 200 stations within this category, the rest #|   being fairly evenly split among California and Florida.
 
+# uses cleaned data in above chunk and plots bar plot
 ggplot(data=CFT, aes(x=fct_infreq(Genre), fill=state))+geom_bar() +
   scale_fill_manual(values=c('gold', 'darkseagreen3', 'dodgerblue2')) +
   theme_minimal() +
@@ -184,7 +179,9 @@ ggplot(data=CFT, aes(x=fct_infreq(Genre), fill=state))+geom_bar() +
 
 ```
 
-# Question 2: Identifying correlation between population size and the number of radio stations in various states/regions of the United States
+# Question 2:
+
+**Identifying correlation between population size and the number of radio stations in various states/regions of the United States**
 
 ### 
 
@@ -237,25 +234,21 @@ trial<-station_count |>
 #| label: Q2 plot-1
 #| echo: false
 #| warning: false
-#| fig-alt: |
-#|   Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all 
-#|   the others combined together. There is a relatively strong, positive 
-#|   relationship between the two variables. The Adelie penguins are clustered 
-#|   together but they don't exhibit a different trend than the rest of the 
-#|   penguins.
 
-# Uses modified penguins dataset from previous chunk
-# Play around with height and width until you're happy with the look
+#uses cleaned data from above chunk and plots histogram distribution
 
 #https://stackoverflow.com/questions/6957549/overlaying-histograms-with-ggplot2-in-r
 ggplot(data=trial, aes(x=x_value, fill= Distribution)) +
   geom_histogram(alpha = 0.3,bins=45,position="identity") + 
   xlim(0,1500) +
   labs(
-    x = "Nummber of Station/Population (scaled by 0.0001)",
+    x = "Number of Stations/Population (scaled by 0.0001)",
     y = "Frequency",
-    title = "Distribution of Number of Radio Stations and Population by State",
-    subtitle = "Population scaled by 0.0001") + 
+    title = "Distribution of Radio Stations and Population by State",
+    subtitle = "Population scaled by 0.0001",
+    caption = "Source: Wikipedia.org and Census Bureau") + 
+    scale_fill_manual(labels=c("Radio Stations", "Population"),
+          values=c("dodgerblue2", "firebrick2")) +
     theme_minimal()
 ```
 
@@ -265,15 +258,8 @@ ggplot(data=trial, aes(x=x_value, fill= Distribution)) +
 #| label: Q2 plot-2
 #| echo: false
 #| warning: false
-#| fig-alt: |
-#|   Body mass vs. flipper lenght of Palmer Penguins for species Adelie and all 
-#|   the others combined together. There is a relatively strong, positive 
-#|   relationship between the two variables. The Adelie penguins are clustered 
-#|   together but they don't exhibit a different trend than the rest of the 
-#|   penguins.
 
-# Uses modified penguins dataset from previous chunk
-# Play around with height and width until you're happy with the look
+#uses cleaned data from above chunk and plots scatter plot by region
 
 ggplot(state_stations_pop_reg, aes(x = pop_2022, y = n, color = region_name)) +
   geom_smooth(method = "lm", se = FALSE, size = 0.75, linetype = "longdash") +
@@ -289,82 +275,11 @@ ggplot(state_stations_pop_reg, aes(x = pop_2022, y = n, color = region_name)) +
       y = "Number of Radio Stations", 
       title = "Population vs. Number of Radio Stations in the US",
       subtitle = "Colored by Region",
-      color = "Region") + 
+      color = "Region",
+      caption = "Source: Wikipedia.org and Census Bureau") + 
       theme_minimal()
-```
-
-## extra
-
-You can use plain text
-
--   or bullet points
-
-::: columns
-::: {.column width="50%"}
-or text in two columns $^*$
-:::
-
-::: {.column width="50%"}
--   like
--   this
-:::
-:::
-
-### 
-
-::: aside
-\[\*\] And add footnotes
-:::
-
-## Plots
-
-```{r}
-#| label: recode-species
-#| echo: false
-
-# In this chunk I'm doing a bunch of analysis that I don't want to present 
-# in my slides. But I need the resulting data frame for a plot I want to present.
-
-
-```
-
-## Plot and text
-
-::: columns
-::: {.column width="50%"}
--   Some text
--   goes here
-:::
-
-::: {.column width="50%"}
-```{r}
-#| warning: false
-#| out-width: "100%"
-#| fig-width: 4
-#| echo: false
-
-# See how I changed out-width and fig-width from defaults
-# to make the figure bigger
-
-
-```
-:::
-:::
-
-# A new section...
-
-## Tables
-
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
-
-```{r}
-#| label: penguins-table
-
-
 ```
 
 ## Images
 
-![Image credit: Danielle Navarro, Percolate.](images/watercolour_sys02_img34_teacup-ocean.png)
-
-##  {.smaller}
+![Image credit: Patrick Daxenbichler](images/radio_mic.jpeg)
