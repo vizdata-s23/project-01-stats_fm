@@ -29,6 +29,7 @@ In addition to this data, we used 2020 Census data to get the population of each
 |:---------------|:---------|:--------------------------|
 |NAME            |character | name of state             |
 |POPESTIMATE2022 |double    | 2022 estimated population |
+|REGION          |character | region number             |     
 
 
 
