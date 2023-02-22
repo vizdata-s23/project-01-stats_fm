@@ -216,3 +216,78 @@ Population size and density varies across the United States. For example, accord
 ### Discussion
 
 (1-3 paragraphs): In the Discussion section, interpret the results of your analysis. Identify any trends revealed (or not revealed) by the plots. Speculate about why the data looks the way it does.
+
+```{r}
+#| label: data_prep for Q2
+pop_data <- read_csv("data/population_data_2022.csv")
+
+# label states
+pop_data <- pop_data %>% 
+  mutate(
+    region_name = case_when(
+      REGION == 1 ~ "NorthEast",
+      REGION == 2 ~ "MidWest",
+      REGION == 3 ~ "South",
+      REGION == 4 ~ "West",
+    )
+  ) %>% 
+  select(
+    region_name, NAME, POPESTIMATE2022
+  )
+
+# remove region names
+pop_data <- pop_data[-c(1:14),]
+
+# remove Puerto Rico
+pop_data <- subset(pop_data, region_name != "Puerto Rico")
+
+# remove '_" from space station state colums
+state_stations$state <- sub("_", " ", state_stations$state)
+
+state_stations_pop <- merge(x = state_stations, y = pop_data, by.x = "state", by.y = "NAME")
+```
+
+```{r}
+#| label: Q2-2 ()
+
+station_count <- distinct(state_stations_pop %>% group_by(state) %>% summarise(n=n(), region_name=region_name, population = POPESTIMATE2022))
+
+ggplot(
+  station_count
+) +
+  geom_density(
+    aes(
+      x = n,
+    )
+  ) +
+  theme_minimal() +
+  labs(
+    x = "Number of Stations per State",
+    y = "Density",
+    title = "Distribution of Number of Stations By Sate",
+    subtitle = "By Region"
+  )
+
+```
+
+```{r}
+ggplot(station_count) +
+  geom_bin2d(
+    aes(x = n, y = population), 
+    binwidth = c(0.25, 500)
+    )
+```
+
+```{r}
+ggplot(
+  station_count
+) +
+  geom_point(
+    aes(
+      x = n,
+      y = state,
+      
+    )
+  ) + 
+  facet_wrap(~region_name)
+```
