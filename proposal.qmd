@@ -15,7 +15,7 @@ library(tidyverse)
 #read in CSVs
 
 #radio_station <- tidytuesdayR::tt_load('2022-11-08')
-station_info <- read_csv(file = 'data/station_info.csv')
+#station_info <- read_csv(file = 'data/station_info.csv')
 state_stations <- read_csv(file = 'data/state_stations.csv')
 ```
 
@@ -37,7 +37,7 @@ The data collected from all 50 states were then aggregated to give the final dat
 
 The raw data, before wrangling, can be found in [FCC's predicted service contour data points](https://www.fcc.gov/media/radio/fm-service-contour-data-points) which is released regularly approximately at 10:00 AM Eastern Time daily. The details of how to read the data and its formats are given on the website. In addition, [FCC's FM Query Broadcast Station Search](https://www.fcc.gov/media/radio/fm-query) can be used to look up a list of licensed stations.
 
-The data that is loaded from `tidytuesday 2022-11-08` contains two datasets - `state_stations` and `station_info`. `State_stations` contains `r nrow(state_stations)` observations of the above data with `r ncol(state_stations)` columns - the above 5 along with a `state` column that has states as value. Station_info contains `r nrow(station_info)` rows of station information data with `r ncol(station_info)` columns - `call_sign`, `facility_id`, `service`, `licensee`, `status`, and `details`. Here are the details for the columns:
+The data that is loaded from `tidytuesday 2022-11-08` contains two datasets - `state_stations` and `station_info`. `State_stations` contains `r nrow(state_stations)` observations of the above data with `r ncol(state_stations)` columns - the above 5 along with a `state` column that has states as value. Station_info contains 256 rows of station information data with 6 columns - `call_sign`, `facility_id`, `service`, `licensee`, `status`, and `details`. Here are the details for the columns:
 
 -   call_sign: a unique identifier for a transmitter station
 
